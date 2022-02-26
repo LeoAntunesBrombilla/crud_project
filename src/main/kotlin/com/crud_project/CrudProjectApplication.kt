@@ -4,9 +4,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.data.annotation.Id
 import org.springframework.data.jdbc.repository.query.Query
+import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,12 +29,17 @@ fun main(args: Array<String>) {
 
 @RestController
 class MessageResource (val service: MessageService){
-	@GetMapping
+	@GetMapping("/")
 	fun index(): List<Message> = service.findMessages()
 
-	@PostMapping
+	@PostMapping("/create")
 	fun post(@RequestBody message: Message) {
 		service.post(message)
+	}
+
+	@DeleteMapping("/delete")
+	fun delete(@RequestBody message: Message) {
+		service.delete(message)
 	}
 }
 
@@ -43,10 +50,16 @@ class MessageService(val db: MessageRepository) {
 	fun post(message: Message) {
 		db.save(message)
 	}
+
+	fun delete(message: Message) {
+		db.delete(message)
+	}
 }
 
 @Table("MESSAGES")
-data class Message(@Id val id: String?, val text: String)
+data class Message(@Id val id: String, val text: String)
+
+
 
 
 
